@@ -1,45 +1,45 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEXA Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
-    .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h1 { color: #2c3e50; }
-    input, button { margin-top: 1rem; padding: 0.5rem; width: 100%; }
-    #risposta { margin-top: 2rem; white-space: pre-wrap; background: #eee; padding: 1rem; border-radius: 5px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Benvenuta nella tua Dashboard AI, Veronica</h1>
-    <p>Scrivi un comando o una richiesta qui sotto:</p>
-    <input type="text" id="prompt" placeholder="Esempio: Scrivi un post per Instagram" />
-    <button onclick="inviaAOpenAI()">Invia</button>
-    <div id="risposta"></div>
-  </div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NEXA Dashboard</title>
+  </head>
+  <body>
+    <h2>Benvenuta nella tua Dashboard AI, Veronica</h2>
 
-  <script>
-    async function inviaAOpenAI() {
-      const inputUtente = document.getElementById("prompt").value;
-      const risposta = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + process.env.OPENAI_API_KEY"
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [{ role: "user", content: inputUtente }]
-        })
+    <form id="commandForm">
+      <textarea id="commandInput" placeholder="Scrivi il tuo comando qui..." rows="4" style="width: 100%; font-size: 1.1rem;"></textarea>
+      <br><br>
+      <button type="submit">Invia</button>
+    </form>
+
+    <div id="response" style="margin-top: 2em; font-family: monospace;"></div>
+
+    <script>
+      const form = document.getElementById('commandForm');
+      const input = document.getElementById('commandInput');
+      const responseBox = document.getElementById('response');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const command = input.value;
+        responseBox.innerHTML = "Elaborazione comando...";
+
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: command })
+          });
+
+          const data = await res.json();
+          responseBox.innerHTML = data.result || data.error || "Nessuna risposta utile.";
+        } catch (error) {
+          responseBox.innerHTML = "Errore di rete o server.";
+        }
       });
-
-      const dati = await risposta.json();
-      const output = dati.choices[0].message.content;
-      document.getElementById("risposta").innerText = output;
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
+
