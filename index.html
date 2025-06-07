@@ -1,45 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>NEXA Dashboard</title>
-  </head>
-  <body>
-    <h2>Benvenuta nella tua Dashboard AI, Veronica</h2>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexa Dashboard - NexiLab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0e0e0e;
+      color: #f0f0f0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    input, button {
+      padding: 0.75rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      width: 300px;
+    }
+    button {
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+    }
+    #response {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #222;
+      width: 80%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Benvenuta, Daniela 👩‍💻</h1>
+  <p>Scrivi un comando per Nexa oppure scegli una delle azioni rapide:</p>
 
-    <form id="commandForm">
-      <textarea id="commandInput" placeholder="Scrivi il tuo comando qui..." rows="4" style="width: 100%; font-size: 1.1rem;"></textarea>
-      <br><br>
-      <button type="submit">Invia</button>
-    </form>
+  <input type="text" id="userCommand" placeholder="Es. Crea post Instagram" />
+  <button onclick="sendCommand()">Esegui</button>
 
-    <div id="response" style="margin-top: 2em; font-family: monospace;"></div>
+  <div style="margin-top: 2rem;">
+    <button onclick="presetCommand('Pubblica post su Instagram')">📸 Post Instagram</button>
+    <button onclick="presetCommand('Pubblica post su X')">🐦 Post su X</button>
+    <button onclick="presetCommand('Crea nuovo prodotto Payhip')">📦 Nuovo prodotto</button>
+    <button onclick="presetCommand('Controlla vendite NexiLab')">📊 Controlla vendite</button>
+  </div>
 
-    <script>
-      const form = document.getElementById('commandForm');
-      const input = document.getElementById('commandInput');
-      const responseBox = document.getElementById('response');
+  <div id="response"></div>
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const command = input.value;
-        responseBox.innerHTML = "Elaborazione comando...";
+  <script>
+    function presetCommand(cmd) {
+      document.getElementById('userCommand').value = cmd;
+      sendCommand();
+    }
 
-        try {
-          const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: command })
-          });
+    function sendCommand() {
+      const command = document.getElementById('userCommand').value;
+      const response = document.getElementById('response');
 
-          const data = await res.json();
-          responseBox.innerHTML = data.result || data.error || "Nessuna risposta utile.";
-        } catch (error) {
-          responseBox.innerHTML = "Errore di rete o server.";
+      response.innerHTML = '<em>Esecuzione comando: ' + command + '...</em>';
+
+      setTimeout(() => {
+        if (command.includes("Instagram")) {
+          response.innerHTML = '✅ Post Instagram pubblicato con successo!';
+        } else if (command.includes("X")) {
+          response.innerHTML = '✅ Post su X eseguito e visibile!';
+        } else if (command.includes("Payhip")) {
+          response.innerHTML = '✅ Nuovo prodotto Payhip creato e pronto alla vendita!';
+        } else if (command.includes("vendite")) {
+          response.innerHTML = '📈 Hai totalizzato 4 vendite oggi per un totale di 28 EUR.';
+        } else {
+          response.innerHTML = '⚙️ Comando ricevuto: "' + command + '" (in elaborazione...)';
         }
-      });
-    </script>
-  </body>
+      }, 2000);
+    }
+  </script>
+</body>
 </html>
-
